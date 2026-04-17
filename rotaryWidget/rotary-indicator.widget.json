@@ -1,0 +1,81 @@
+{
+  "types": ["int", "float", "long", "uint", "ulong"],
+  "widgetType": "rotary-indicator",
+  "label": {
+    "en.utf8": "Rotary Indicator"
+  },
+  "description": {
+    "en.utf8": "Circular indicator with rotating pointer, progress ring, and center value"
+  },
+  "size": {
+    "minRows": 6,
+    "minCols": 6
+  },
+  "componentSettings": {
+    "tagname": "wui-rotary-indicator",
+    "scripts": [
+      "/data/WebUI/widgets-v2/rotary-indicator/rotary-indicator.widget"
+    ],
+    "jsonSchema": {
+      "type": "object",
+      "required": ["angle", "progress", "value"],
+      "properties": {
+        "angle": { "type": "number" },
+        "progress": { "type": "number" },
+        "value": { "type": ["number", "string"] },
+        "unit": { "type": "string", "default": "" },
+        "min": { "type": "number", "default": 0 },
+        "max": { "type": "number", "default": 360 }
+      }
+    },
+    "uiSchema": {
+      "type": "object",
+      "elements": [
+        {
+          "type": "WuiLayout",
+          "label": "Datapoints",
+          "options": { "collapsible": "open" },
+          "elements": [
+            {
+              "type": "DataPointControl",
+              "label": "Angle",
+              "scope": "#/properties/angle"
+            },
+            {
+              "type": "DataPointControl",
+              "label": "Progress",
+              "scope": "#/properties/progress"
+            },
+            {
+              "type": "DataPointControl",
+              "label": "Center Value",
+              "scope": "#/properties/value"
+            }
+          ]
+        },
+        {
+          "type": "WuiLayout",
+          "label": "Display",
+          "options": { "collapsible": "open" },
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/unit",
+              "label": "Unit"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/min",
+              "label": "Minimum"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/max",
+              "label": "Maximum"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
