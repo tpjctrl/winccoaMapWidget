@@ -1,0 +1,441 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/oa-widget-schema.json",
+  "title": "WinCC OA Dashboard Widget Schema",
+  "description": "Validates widget definition JSON files. Supports inline or referenced json/ui schemas, native or custom tag names, optional permissions, context, and extended control types.",
+  "type": "object",
+  "required": [
+    "widgetType",
+    "label",
+    "description",
+    "size",
+    "componentSettings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "bool",
+          "int",
+          "float",
+          "string",
+          "langString",
+          "long",
+          "time",
+          "uint",
+          "ulong",
+          "char",
+          "dyn_uint",
+          "dyn_ulong",
+          "dyn_int",
+          "dyn_long",
+          "dyn_float",
+          "dyn_bool",
+          "dyn_string",
+          "dyn_time",
+          "dyn_langString"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "widgetType": { "type": "string", "minLength": 1 },
+    "label": { "$ref": "#/$defs/LabelOrLang" },
+    "description": { "$ref": "#/$defs/LabelOrLang" },
+    "size": {
+      "type": "object",
+      "required": ["minRows", "minCols"],
+      "additionalProperties": false,
+      "properties": {
+        "minRows": { "type": "integer", "minimum": 1 },
+        "minCols": { "type": "integer", "minimum": 1 },
+        "rows": { "type": "integer", "minimum": 1 },
+        "cols": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "defaultSettings": {
+      "type": "object",
+      "description": "Arbitrary default widget settings.",
+      "additionalProperties": true
+    },
+    "variables": {
+      "type": "object",
+      "description": "Optional variables group context (e.g. { context: 'group', config: { sTimeRange: 'now/d' } }).",
+      "required": ["context", "config"],
+      "additionalProperties": false,
+      "properties": {
+        "context": { "const": "group" },
+        "config": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "canWrite": { "type": "boolean" } }
+    },
+    "context": { "type": "array", "items": { "type": "string" } },
+    "svgFile": { "type": "string", "pattern": "^/data/WebUI/.+\\.svg$" },
+    "componentSettings": {
+      "type": "object",
+      "required": ["scripts", "tagname", "jsonSchema", "uiSchema"],
+      "additionalProperties": false,
+      "properties": {
+        "styles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "scripts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 0
+        },
+        "tagname": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)+$" },
+            {
+              "type": "string",
+              "enum": [
+                "input",
+                "textarea",
+                "button",
+                "a",
+                "img",
+                "video",
+                "iframe",
+                "label",
+                "div",
+                "span",
+                "hr",
+                "canvas",
+                "progress",
+                "meter",
+                "dialog"
+              ]
+            }
+          ]
+        },
+        "jsonSchema": {
+          "oneOf": [
+            { "$ref": "#/$defs/WidgetDataJsonSchema" },
+            {
+              "type": "string",
+              "pattern": "^(?!/)(?!https?://)([A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+$"
+            }
+          ]
+        },
+        "uiSchema": {
+          "oneOf": [
+            { "$ref": "#/$defs/UiSchemaRoot" },
+            {
+              "type": "string",
+              "pattern": "^(?!/)(?!https?://)([A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+$"
+            }
+          ]
+        },
+        "staticSettings": {
+          "type": "object",
+          "description": "Optional non-editable (by user form) static configuration forwarded to widget (e.g. alert filters).",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "LabelOrLang": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "$ref": "#/$defs/MultiLangObject" }
+      ]
+    },
+    "MultiLangObject": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]{2}_[A-Z]{2}(\\.utf8)?$": { "type": "string" }
+      }
+    },
+    "WidgetDataJsonSchema": {
+      "type": "object",
+      "required": ["type", "properties"],
+      "properties": {
+        "type": { "const": "object" },
+        "required": { "type": "array", "items": { "type": "string" } },
+        "properties": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/GenericPropertySchema" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "GenericPropertySchema": { "type": "object" },
+    "FontSizeFactor": {
+      "type": "string",
+      "enum": ["xsmall", "small", "medium", "large", "xlarge", "xxlarge"]
+    },
+    "IconSizeFactor": {
+      "type": "string",
+      "enum": ["xsmall", "small", "medium", "large", "xlarge"]
+    },
+    "IconPosition": {
+      "type": "string",
+      "enum": ["left", "right", "top", "bottom"]
+    },
+    "DataPointControl": {
+      "type": "object",
+      "required": ["context", "config"],
+      "additionalProperties": false,
+      "properties": {
+        "context": { "const": "data-point" },
+        "config": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "fetchMethod": {
+              "type": "string",
+              "enum": ["historic", "connect"]
+            },
+            "historic": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "sTimeRange": { "type": "string" },
+                "aggregateMethod": {
+                  "type": "string",
+                  "enum": ["compress", "raw"]
+                },
+                "customCompress": { "type": "boolean" },
+                "customFields": { "type": "boolean" },
+                "customInterpolate": { "type": "boolean" },
+                "customTimeSlots": { "type": "boolean" },
+                "customTimeSlotSeconds": { "type": "boolean" }
+              }
+            },
+            "dpSet": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "customValue": { "type": "boolean" },
+                "customEvent": { "type": "boolean" },
+                "customValidation": { "type": "boolean" },
+                "event": { "type": "string", "pattern": "^[a-zA-Z0-9:_-]+$" }
+              }
+            },
+            "variables": { "type": "object", "additionalProperties": true }
+          }
+        }
+      }
+    },
+    "StringSchema": {
+      "type": "object",
+      "properties": { "type": { "const": "string" } },
+      "required": ["type"],
+      "additionalProperties": true
+    },
+    "ObjectSchema": {
+      "type": "object",
+      "properties": { "type": { "const": "object" } },
+      "required": ["type"],
+      "additionalProperties": true
+    },
+    "UiSchemaRoot": {
+      "type": "object",
+      "required": ["type", "elements"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "object" },
+        "elements": { "$ref": "#/$defs/UiSchemaElementArray" }
+      }
+    },
+    "UiSchemaElementArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/UiSchemaElement" }
+    },
+    "UiSchemaElement": {
+      "oneOf": [
+        { "$ref": "#/$defs/LayoutElement" },
+        { "$ref": "#/$defs/ControlElement" }
+      ]
+    },
+    "LayoutElement": {
+      "type": "object",
+      "required": ["type", "elements"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "WuiLayout" },
+        "label": { "type": "string" },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "orient": { "type": "string", "enum": ["vertical", "horizontal"] },
+            "noborder": {
+              "type": ["boolean", "string"],
+              "enum": [true, false, "true", "false"]
+            },
+            "collapsible": {
+              "type": ["boolean", "string"],
+              "enum": [true, false, "open", "closed"]
+            },
+            "showFirstElementAsHeader": { "type": "boolean" }
+          }
+        },
+        "elements": { "$ref": "#/$defs/UiSchemaElementArray" }
+      }
+    },
+    "ControlElement": {
+      "type": "object",
+      "required": ["type", "label", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "DataPointControl",
+            "IconSelectorControl",
+            "IconPositionSelectControl",
+            "IconSizeSelectControl",
+            "FontSizeSelectControl",
+            "IconToggleButtonGroupControl",
+            "FileSelectorControl",
+            "ContextControl",
+            "CheckboxControl",
+            "Control"
+          ]
+        },
+        "label": { "type": "string" },
+        "scope": {
+          "type": "string",
+          "pattern": "^#/properties/[a-zA-Z0-9_]+$"
+        },
+        "placeholder": { "type": "string" },
+        "rule": { "type": "object" },
+        "options": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "fetchMethod": { "type": "string", "enum": ["historic"] },
+            "aggregateMethod": {
+              "type": "string",
+              "enum": ["compress", "raw"]
+            },
+            "dpSet": {
+              "type": "object",
+              "properties": {
+                "customValue": {},
+                "validate": { "type": "boolean" },
+                "customValidation": { "type": "boolean" },
+                "event": { "type": "string", "pattern": "^[a-zA-Z0-9:_-]+$" }
+              },
+              "additionalProperties": false
+            },
+            "inputType": { "type": "string" },
+            "tooltip": { "type": "string" },
+            "context": { "type": "string", "enum": ["series"] },
+            "step": { "type": ["number", "string"] },
+            "value": {},
+            "contextInputType": {
+              "type": "string",
+              "enum": [
+                "translate",
+                "dpconnect",
+                "color",
+                "unit",
+                "navigate",
+                "dpset",
+                "history",
+                "connectionstate"
+              ]
+            },
+            "allowedExtensions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "pattern": { "type": "string" },
+            "customValidationMessages": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "DataPointControl" } } },
+          "then": {
+            "properties": {
+              "scope": {
+                "type": "string",
+                "pattern": "^#/properties/(datapoint|value|color|alertColor|format|unit|name|valueOn|valueOff)$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "FontSizeSelectControl" } }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "type": "string",
+                "pattern": "^#/properties/(fontSizeFactor|unitFontSizeFactor|style)$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "IconSelectorControl" } }
+          },
+          "then": {
+            "properties": {
+              "scope": { "type": "string", "pattern": "^#/properties/icon$" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "IconPositionSelectControl" } }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "type": "string",
+                "pattern": "^#/properties/iconPosition$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "IconSizeSelectControl" } }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "type": "string",
+                "pattern": "^#/properties/iconSizeFactor$"
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "CheckboxControl" } } },
+          "then": {
+            "properties": {
+              "scope": {
+                "type": "string",
+                "pattern": "^#/properties/(required|target|outline|ghost)$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
