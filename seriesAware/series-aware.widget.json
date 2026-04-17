@@ -1,0 +1,89 @@
+{
+  "types": ["int", "float", "long", "uint", "ulong"],
+  "widgetType": "series-aware",
+  "label": {
+    "en.utf8": "Series Aware Widget"
+  },
+  "description": {
+    "en.utf8": "Displays multiple datapoint values side by side"
+  },
+  "size": {
+    "minRows": 2,
+    "minCols": 6
+  },
+  "componentSettings": {
+    "tagname": "wui-series-aware",
+    "scripts": [
+      "/data/WebUI/widgets-v2/series-aware/series-aware.widget"
+    ],
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "series": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["value", "name"],
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string"
+              },
+              "alertColor": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "uiSchema": {
+      "type": "object",
+      "elements": [
+        {
+          "type": "WuiLayout",
+          "label": "Datapoints",
+          "options": {
+            "collapsible": "open",
+            "noborder": true,
+            "showFirstElementAsHeader": false
+          },
+          "elements": [
+            {
+              "type": "SeriesGroup",
+              "scope": "#/properties/series",
+              "label": "Series",
+              "options": {
+                "itemLabel": "Datapoint",
+                "default": {
+                  "datapoint": {
+                    "context": "data-point",
+                    "config": {
+                      "customAlertColor": true
+                    }
+                  }
+                }
+              },
+              "elements": [
+                {
+                  "type": "DataPointControl",
+                  "label": "Datapoint",
+                  "scope": "#/properties/datapoint"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
