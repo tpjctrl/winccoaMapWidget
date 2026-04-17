@@ -1,0 +1,101 @@
+{
+  "types": ["int", "float", "long", "uint", "ulong"],
+  "widgetType": "series-rotary",
+  "label": {
+    "en.utf8": "Series Rotary (Angle / Speed / Power)"
+  },
+  "description": {
+    "en.utf8": "Rotary widget with angle, speed and power datapoints"
+  },
+  "size": {
+    "minRows": 6,
+    "minCols": 6
+  },
+
+  "componentSettings": {
+    "tagname": "wui-series-rotary",
+    "scripts": [
+      "/data/WebUI/widgets-v2/series-rotary/series-rotary.widget"
+    ],
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "series": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["value", "name"],
+            "properties": {
+              "value": { "type": "number" },
+              "name": { "type": "string" },
+              "unit": { "type": "string" },
+              "format": { "type": "string" },
+              "color": { "type": "string" },
+              "alertColor": { "type": "string" }
+            }
+          }
+        },
+        "circleColor": {
+          "type": "string",
+          "default": "var(--theme-color-soft-border)"
+        }
+      }
+    },
+    "uiSchema": {
+      "type": "object",
+      "elements": [
+        {
+          "type": "WuiLayout",
+          "label": "Datapoints",
+          "options": {
+            "collapsible": "open",
+			"showFirstElementAsHeader": false,
+            "noborder": true
+          },
+          "elements": [
+            {
+              "type": "SeriesGroup",
+              "scope": "#/properties/series",
+              "label": "Series (Angle / Speed / Power)",
+              "options": {
+                "itemLabel": "Datapoint",
+                "default": {
+                  "datapoint": {
+                    "context": "data-point",
+                    "config": {
+                      "customAlertColor": true
+                    }
+                  }
+                }
+              },
+              "elements": [
+                {
+                  "type": "DataPointControl",
+                  "scope": "#/properties/datapoint",
+                  "label": "Datapoint"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "WuiLayout",
+          "label": "Display",
+          "options": {
+            "collapsible": true,
+            "noborder": true
+          },
+          "elements": [
+            {
+              "type": "Control",
+              "label": "Circle Color",
+              "scope": "#/properties/circleColor"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
