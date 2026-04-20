@@ -1,0 +1,83 @@
+{
+  "types": ["int", "float", "long", "uint", "ulong"],
+  "widgetType": "map-point",
+  "label": { "en.utf8": "Map Point" },
+  "description": { "en.utf8": "Offshore map with grouped turbine points showing live datapoint values" },
+  "size": { "minRows": 8, "minCols": 8 },
+  "componentSettings": {
+    "tagname": "wui-map-point",
+    "scripts": ["/data/WebUI/widgets-v2/map-point/map-point.widget"],
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "series": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["value", "name"],
+            "properties": {
+              "value": { "type": "number" },
+              "name": { "type": "string" },
+              "unit": { "type": "string" },
+              "format": { "type": "string" },
+              "color": { "type": "string" },
+              "alertColor": { "type": "string" },
+              "group": { "type": "string" },
+              "latlon": { "type": "string" },
+              "metadata": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "uiSchema": {
+      "type": "object",
+      "elements": [
+        {
+          "type": "WuiLayout",
+          "label": "Datapoints",
+          "options": { "collapsible": "open", "noborder": true, "showFirstElementAsHeader": false },
+          "elements": [
+            {
+              "type": "SeriesGroup",
+              "scope": "#/properties/series",
+              "label": "Map Points",
+              "options": {
+                "itemLabel": "Datapoint",
+                "default": {
+                  "datapoint": {
+                    "context": "data-point",
+                    "config": { "customAlertColor": true }
+                  }
+                }
+              },
+              "elements": [
+                {
+                  "type": "DataPointControl",
+                  "label": "Datapoint",
+                  "scope": "#/properties/datapoint"
+                },
+                {
+                  "type": "Control",
+                  "label": "Group (Turbine ID)",
+                  "scope": "#/properties/group"
+                },
+                {
+                  "type": "Control",
+                  "label": "Coordinates (lat, lon)",
+                  "scope": "#/properties/latlon"
+                },
+                {
+                  "type": "Control",
+                  "label": "Metadata (JSON)",
+                  "scope": "#/properties/metadata"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
