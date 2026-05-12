@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Turbine Overview Dashboards</title>
+    <base href="./" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="ix:legacy-icons" content="false" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <link rel="stylesheet" href="/WebUI_Colors" />
+    <script>
+      (function () {
+        var __DEV__ = false;
+        if (
+          !__DEV__ &&
+          (location.pathname === '/' || location.pathname === '/index.html')
+        ) {
+          // Preserve existing hash (location.hash already contains the leading '#')
+          location.replace(
+            '/data/dashboard-wc/index.html' + (location.hash || '')
+          );
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="./entry/index.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index.css">
+  <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
+  <body>
+    <demo-app-ix></demo-app-ix>
+  </body>
+</html>
